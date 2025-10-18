@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block title %}Pump Status Chart - Green Growth - GROOT{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="mb-2">
+                    <i class="fas fa-tint me-2" style="color: #28a745;"></i>Pump Status Chart
+                </h1>
+                <p class="lead text-muted">Water pump monitoring and usage statistics</p>
+            </div>
+            <div>
+                <a href="{{ url_for('web.index') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Current Status Card -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Current Status</h5>
+                <h2 class="text-success" id="current-status">--</h2>
+                <small class="text-muted" id="last-update">Last updated: --</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Today's Runtime</h5>
+                <h4 class="text-info" id="runtime-today">-- min</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Cycles Today</h5>
+                <h4 class="text-warning" id="cycles-today">--</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Efficiency</h5>
+                <h4 class="text-primary" id="efficiency">--%</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pump Control -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Pump Control</h5>
+            </div>
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <button class="btn btn-success btn-lg me-2" id="pump-on-btn" onclick="togglePump('ON')">
+                            <i class="fas fa-play me-1"></i>Turn ON
+                        </button>
+                        <button class="btn btn-danger btn-lg" id="pump-off-btn" onclick="togglePump('OFF')">
+                            <i class="fas fa-stop me-1"></i>Turn OFF
+                        </button>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="autoMode">
+                            <label class="form-check-label" for="autoMode">
+                                Auto Mode (Smart Irrigation)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-primary" onclick="refreshData()">
+                            <i class="fas fa-sync-alt me-1"></i>Refresh Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Chart -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Pump Activity Over Time</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="pumpChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pump Statistics -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Weekly Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h6>Total Runtime</h6>
+                        <h4 class="text-primary" id="weekly-runtime">-- hours</h4>
+                    </div>
+                    <div class="col-6">
+                        <h6>Total Cycles</h6>
+                        <h4 class="text-info" id="weekly-cycles">--</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Pump Health</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h6>Status</h6>
+                        <h4 class="text-success" id="pump-health">Healthy</h4>
+                    </div>
+                    <div class="col-6">
+                        <h6>Last Maintenance</h6>
+                        <h4 class="text-muted" id="last-maintenance">-- days ago</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let pumpChart;
+let currentPumpStatus = 'OFF';
+
+// Initialize chart when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initializeChart();
+    loadPumpData();
+    
+    // Setup auto mode toggle
+    document.getElementById('autoMode').addEventListener('change', function() {
+        if (this.checked) {
+            alert('Auto mode enabled - pump will operate based on soil moisture and plant needs');
+        } else {
+            alert('Auto mode disabled - manual control only');
+        }
+    });
+});
+
+function initializeChart() {
+    const ctx = document.getElementById('pumpChart').getContext('2d');
+    
+    pumpChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Pump ON (minutes)',
+                data: [],
+                backgroundColor: 'rgba(40, 167, 69, 0.8)',
+                borderColor: '#28a745',
+                borderWidth: 1
+            }, {
+                label: 'Pump OFF (minutes)',
+                data: [],
+                backgroundColor: 'rgba(108, 117, 125, 0.8)',
+                borderColor: '#6c757d',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    stacked: true,
+                    title: {
+                        display: true,
+                        text: 'Duration (minutes)'
+                    }
+                },
+                x: {
+                    stacked: true,
+                    title: {
+                        display: true,
+                        text: 'Time Period'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            }
+        }
+    });
+}
+
+function loadPumpData() {
+    fetch('/api/sensors/pump')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateChartData(data.data);
+                updateStatistics(data.statistics);
+                updatePumpStatus(data.status);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading pump data:', error);
+        });
+}
+
+function updateChartData(data) {
+    // Update chart
+    pumpChart.data.labels = data.labels;
+    pumpChart.data.datasets[0].data = data.onTimes;
+    pumpChart.data.datasets[1].data = data.offTimes;
+    pumpChart.update();
+}
+
+function updateStatistics(stats) {
+    document.getElementById('runtime-today').textContent = stats.runtimeToday + ' min';
+    document.getElementById('cycles-today').textContent = stats.cyclesToday;
+    document.getElementById('efficiency').textContent = stats.efficiency + '%';
+    document.getElementById('weekly-runtime').textContent = stats.weeklyRuntime + ' hours';
+    document.getElementById('weekly-cycles').textContent = stats.weeklyCycles;
+    document.getElementById('last-maintenance').textContent = stats.lastMaintenance + ' days ago';
+}
+
+function updatePumpStatus(status) {
+    currentPumpStatus = status;
+    const statusElement = document.getElementById('current-status');
+    const onBtn = document.getElementById('pump-on-btn');
+    const offBtn = document.getElementById('pump-off-btn');
+    
+    if (status === 'ON') {
+        statusElement.textContent = 'ON';
+        statusElement.className = 'text-success';
+        onBtn.disabled = true;
+        offBtn.disabled = false;
+    } else {
+        statusElement.textContent = 'OFF';
+        statusElement.className = 'text-secondary';
+        onBtn.disabled = false;
+        offBtn.disabled = true;
+    }
+    
+    document.getElementById('last-update').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+}
+
+function togglePump(status) {
+    fetch('/api/pump', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: status })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updatePumpStatus(status);
+            loadPumpData(); // Refresh data
+        } else {
+            alert('Error controlling pump: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error controlling pump:', error);
+        alert('Error controlling pump');
+    });
+}
+
+function refreshData() {
+    loadPumpData();
+}
+</script>
+{% endblock %}
