@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}About - Firebase Flask App{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">About Firebase Flask App</h1>
+        <p class="lead">A modern web application built with Flask and Firebase Firestore.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Features</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        <strong>Firebase Integration:</strong> Real-time database with Firestore
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        <strong>RESTful API:</strong> Complete CRUD operations for products
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        <strong>Modern UI:</strong> Bootstrap 5 responsive design
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        <strong>Environment Configuration:</strong> Secure configuration management
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        <strong>Error Handling:</strong> Comprehensive error management
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Technology Stack</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <strong>Backend:</strong> Python Flask
+                    </li>
+                    <li class="mb-2">
+                        <strong>Database:</strong> Firebase Firestore
+                    </li>
+                    <li class="mb-2">
+                        <strong>Frontend:</strong> HTML5, CSS3, JavaScript
+                    </li>
+                    <li class="mb-2">
+                        <strong>UI Framework:</strong> Bootstrap 5
+                    </li>
+                    <li class="mb-2">
+                        <strong>Authentication:</strong> Firebase Admin SDK
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Getting Started</h5>
+            </div>
+            <div class="card-body">
+                <ol>
+                    <li class="mb-2">
+                        <strong>Install Dependencies:</strong>
+                        <code>pip install -r requirements.txt</code>
+                    </li>
+                    <li class="mb-2">
+                        <strong>Configure Environment:</strong>
+                        Copy <code>.env.example</code> to <code>.env</code> and update with your Firebase credentials
+                    </li>
+                    <li class="mb-2">
+                        <strong>Run the Application:</strong>
+                        <code>python run.py</code>
+                    </li>
+                    <li class="mb-2">
+                        <strong>Access the App:</strong>
+                        Open <code>http://localhost:5000</code> in your browser
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
