@@ -37,6 +37,16 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('web.settings') }}">
+                            <i class="fas fa-cog me-1"></i>Settings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('web.assistant') }}">
+                            <i class="fas fa-robot me-1"></i>Groot Assistant
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('web.logout') }}" onclick="return confirm('Are you sure you want to logout?')">
                             <i class="fas fa-sign-out-alt me-1"></i>Logout
                         </a>
@@ -71,6 +81,18 @@
             <p>&copy; 2025 Green Growth - GROOT. All rights reserved.</p>
         </div>
     </footer>
+
+    <!-- Floating Groot Assistant button (more visible) -->
+    {% set _convo = session.get('assistant_convo', []) %}
+    {% set _convo_len = _convo|length if _convo is not none else 0 %}
+    <a href="{{ url_for('web.assistant') }}" class="groot-assist-btn {% if _convo_len > 0 %}has-convo{% endif %}" aria-label="Open Groot Assistant" title="Groot Assistant">
+        <span class="groot-assist-ring" aria-hidden="true"></span>
+        <span class="groot-assist-icon" aria-hidden="true"><i class="fas fa-robot"></i></span>
+        {% if _convo_len > 0 %}
+            <span class="groot-assist-badge" aria-hidden="true">{{ _convo_len }}</span>
+        {% endif %}
+    </a>
+    <div class="groot-assist-label" aria-hidden="true">GROOT AI</div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

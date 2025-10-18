@@ -134,6 +134,57 @@ def about():
     """Render the about page."""
     return render_template('about.html')
 
+
+@web_bp.route('/settings', methods=['GET', 'POST'])
+@login_required
+def settings():
+    """Render and handle settings updates."""
+    if request.method == 'POST':
+        # For now store simple preferences in session
+        display_name = request.form.get('display_name')
+        contact_email = request.form.get('contact_email')
+        session['display_name'] = display_name
+        session['contact_email'] = contact_email
+        flash('Settings updated successfully.', 'success')
+        return redirect(url_for('web.settings'))
+
+    # Provide current values from session if available
+    prefs = {
+        'display_name': session.get('display_name', ''),
+        'contact_email': session.get('contact_email', '')
+    }
+    return render_template('settings.html', prefs=prefs)
+
+
+@web_bp.route('/assistant', methods=['GET', 'POST'])
+@login_required
+def assistant():
+    """Simple Groot Assistant mock page. Stores conversation in session."""
+    convo = session.get('assistant_convo', [])
+
+    if request.method == 'POST':
+        user_msg = request.form.get('message', '').strip()
+        if user_msg:
+            # Append user message
+            convo.append({'role': 'user', 'text': user_msg})
+
+            # Mock assistant reply (placeholder for real AI integration)
+            reply = f"Groot Assistant: I received your message: '{user_msg}'." 
+            convo.append({'role': 'assistant', 'text': reply})
+            session['assistant_convo'] = convo
+            flash('Message sent to Groot Assistant.', 'info')
+        return redirect(url_for('web.assistant'))
+
+    return render_template('assistant.html', convo=convo)
+
+
+@web_bp.route('/assistant/clear')
+@login_required
+def assistant_clear():
+    session.pop('assistant_convo', None)
+    flash('Assistant conversation cleared.', 'info')
+    return redirect(url_for('web.assistant'))
+
 @web_bp.route('/charts/temperature')
 @login_required
 def temperature_chart():
