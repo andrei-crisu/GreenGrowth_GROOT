@@ -8,12 +8,12 @@ Create a `.env` file in the `WebUI/firebase-flask-app/` directory with the follo
 
 ```bash
 # Flask Configuration
-SECRET_KEY=your-very-secure-secret-key-here
-FLASK_ENV=development
-FLASK_DEBUG=True
+SECRET_KEY=secret_key_example
+FLASK_ENV=environment_example
+FLASK_DEBUG=debug_value_example
 
 # Firebase Configuration (Optional)
-FIREBASE_SERVICE_ACCOUNT_PATH=path/to/your/service-account-key.json
+FIREBASE_SERVICE_ACCOUNT_PATH=firebase_service_account_path_example
 ```
 
 ### Authentication Configuration
@@ -24,25 +24,25 @@ You have two options for setting up user credentials:
 
 ```bash
 # Default admin user
-ADMIN_USER=admin
-ADMIN_PASS=your-secure-admin-password
+ADMIN_USER=admin_user_example
+ADMIN_PASS=admin_pass_example
 
 # GROOT user
-GROOT_USER=groot
-GROOT_PASS=your-secure-groot-password
+GROOT_USER=groot_user_example
+GROOT_PASS=groot_pass_example
 
 # Additional users (optional)
-USER1_NAME=john
-USER1_PASS=john-secure-password
-USER2_NAME=jane
-USER2_PASS=jane-secure-password
+USER1_NAME=user1_name_example
+USER1_PASS=user1_pass_example
+USER2_NAME=user2_name_example
+USER2_PASS=user2_pass_example
 ```
 
 #### Option 2: JSON Format (Advanced)
 
 ```bash
 # JSON format for multiple users (overrides individual settings)
-USERS_JSON={"admin":"secure-password","groot":"another-password","user":"user-password"}
+USERS_JSON={"admin_example":"admin_pass_example","user1_example":"user1_pass_example","user2_example":"user2_pass_example"}
 ```
 
 ## 🔒 Security Best Practices
@@ -56,18 +56,18 @@ USERS_JSON={"admin":"secure-password","groot":"another-password","user":"user-pa
 
 ```bash
 # Flask Configuration
-SECRET_KEY=my-super-secret-key-2024-groot-system
-FLASK_ENV=development
-FLASK_DEBUG=True
+SECRET_KEY=secret_key_example
+FLASK_ENV=environment_example
+FLASK_DEBUG=debug_value_example
 
 # Authentication
-ADMIN_USER=admin
-ADMIN_PASS=MySecureAdminPass123!
-GROOT_USER=groot
-GROOT_PASS=GrootSecurePass456!
+ADMIN_USER=admin_user_example
+ADMIN_PASS=admin_pass_example
+GROOT_USER=groot_user_example
+GROOT_PASS=groot_pass_example
 
 # Firebase (Optional)
-FIREBASE_SERVICE_ACCOUNT_PATH=./config/firebase-key.json
+FIREBASE_SERVICE_ACCOUNT_PATH=firebase_config_path_example
 ```
 
 ## 🚀 Quick Setup

@@ -5,7 +5,11 @@ Run this file to start the development server.
 """
 
 import os
+from dotenv import load_dotenv
 from app import create_app
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Create the Flask app
 app = create_app()
