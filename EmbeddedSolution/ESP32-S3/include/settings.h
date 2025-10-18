@@ -4,8 +4,8 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#define WIFI_SSID     "CRAIOVA HACKATHON"
-#define WIFI_PASSWORD "20252025"
+#define WIFI_SSID     "DIGI-c9vF"
+#define WIFI_PASSWORD "aA2CY6YF"
 
 // // Firebase configuration - replace the placeholders with your Firebase project credentials
 // #define FIREBASE_API_KEY          "d84273ce6e0b191af506fe5405c089f580d3956d"

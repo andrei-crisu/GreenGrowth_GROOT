@@ -2,7 +2,7 @@
 #include <WiFi.h>
 #include <Firebase_ESP_Client.h>
 #include <DHT.h>
-#include "settings.h"
+#include "settings.h" 
 
 #define PIN_SENZOR_UMIDITATE_SOL 1
 #define PIN_SENZOR_TEMP 2
@@ -16,7 +16,7 @@ uint8_t temperatura_solar = 0;
 uint8_t umiditate_solar = 0;
 uint8_t umiditate_sol = 0;
 bool stare_pompa = false;
-
+DHT dht(PIN_SENZOR_TEMP, DHT_TYPE);
 
 // Obiecte Firebase
 FirebaseData fbdo;
@@ -29,16 +29,25 @@ void read_DHT()
   umiditate_solar = (uint8_t)dht.readHumidity();
   temperatura_solar = (uint8_t)dht.readTemperature();
 }
+
 void debug_log(uint8_t cod)
 {
-  Serial.println("Temperatura solar: ");
-  Serial.println(temperatura_solar);
-  Serial.println("Umiditate solar: ");
-  Serial.println(umiditate_solar);
-  Serial.println("Umiditate sol: ");
-  Serial.println(umiditate_sol);
-  Serial.print(" Cod debug");
-  Serial.println(cod);
+  if(0 ==cod)
+  {
+    Serial.println("Temperatura solar: ");
+    Serial.println(temperatura_solar);
+    Serial.println("Umiditate solar: ");
+    Serial.println(umiditate_solar);
+    Serial.println("Umiditate sol: ");
+    Serial.println(umiditate_sol);
+  }
+  else
+  {
+    Serial.print(" Cod debug ");
+    Serial.println(cod);
+
+  }
+  delay(300);
 
 }
 void read_DB()
@@ -49,9 +58,9 @@ void read_DB()
       Serial.println(fbdo.intData());
     }
   } else {
+    debug_log(11);
     Serial.println(fbdo.errorReason());
   }
-  debug_log(READ_DB);
 }
 
 void write_DB()
@@ -59,17 +68,18 @@ void write_DB()
   if (Firebase.RTDB.setInt(&fbdo, "/test/value", 123)) {
     Serial.println("Date trimise cu succes!");
   } else {
+    debug_log(12);
     Serial.println(fbdo.errorReason());
   }
-  debug_log(WRITE_DB);
 }
 
-void setup() {
+void setup() 
+{
   Serial.begin(115200);
+  //dht.begin();
 
   // Wi-Fi
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  Serial.print("Conectare la Wi-Fi");
 
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
@@ -96,8 +106,8 @@ void setup() {
 
 void loop() 
 {
-  read_DHT();
+  //read_DHT();
 
-
+  
   // Poți actualiza sau citi date periodic aici
 }
