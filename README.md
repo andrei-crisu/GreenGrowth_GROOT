@@ -51,7 +51,8 @@ python run.py
 ```
 
 4. **Access Dashboard**
-Open: http://127.0.0.1:5000
+- **Local**: http://127.0.0.1:5000
+- **Network**: http://[YOUR_IP]:5000 (accessible from other devices)
 
 ## 📊 Components
 
@@ -80,11 +81,17 @@ The system monitors key environmental factors:
 
 ## 🔧 Configuration
 
-The system runs in test mode by default. For production use, configure Firebase credentials in the `.env` file.
+The system runs in test mode by default. For production use:
+
+1. **Create a `.env` file** in `WebUI/firebase-flask-app/`
+2. **Set up authentication** with secure credentials
+3. **Configure Firebase** (optional) for data persistence
+
+See `WebUI/firebase-flask-app/CONFIG.md` for detailed configuration instructions.
 
 ## 📄 License
 
-© 2024 Green Growth - GROOT. All rights reserved.
+© 2025 Green Growth - GROOT. All rights reserved.
 
 ---
 
