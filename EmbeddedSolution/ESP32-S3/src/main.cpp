@@ -16,7 +16,7 @@
 #define API_KEY "AIzaSyBj3A2B8LSgEA1_OUOZlU8sQp4njnxXOis"
 #define DATABASE_URL "https://groot-f61e8-default-rtdb.europe-west1.firebasedatabase.app/"
 
-#define UPDATE_INTERVAL_MS          15000
+#define UPDATE_INTERVAL_MS          5000
 #define SENSOR_AIR_TEMP_HUMID_PIN   9
 #define SENSOR_SOIL_HUMID_PIN       10
 #define SENSOR_LIGHT_PIN            11
