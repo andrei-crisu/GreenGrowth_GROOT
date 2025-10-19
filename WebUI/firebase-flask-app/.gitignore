@@ -131,6 +131,17 @@ dmypy.json
 # Firebase
 firebase-adminsdk-*.json
 service-account-key.json
+firebase-key.json
+firebase-credentials.json
+
+# Environment and Configuration
+.env
+.env.local
+.env.production
+.env.staging
+config.json
+secrets.json
+credentials.json
 
 # IDE
 .vscode/
@@ -141,3 +152,11 @@ service-account-key.json
 # OS
 .DS_Store
 Thumbs.db
+
+# Security and Credentials
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer

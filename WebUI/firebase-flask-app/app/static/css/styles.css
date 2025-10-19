@@ -92,3 +92,295 @@ footer {
 .modal-footer {
     border-top: 1px solid #dee2e6;
 }
+
+/* Dashboard specific styles */
+.sensor-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: none;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.sensor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.temperature-card {
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+    color: white;
+}
+
+.humidity-card {
+    background: linear-gradient(135deg, #4ecdc4, #6dd5ed);
+    color: white;
+}
+
+.luminosity-card {
+    background: linear-gradient(135deg, #ffe66d, #ffd93d);
+    color: #333;
+}
+
+.pump-card {
+    background: linear-gradient(135deg, #a8e6cf, #88d8a3);
+    color: #333;
+}
+
+.sensor-icon {
+    margin-bottom: 1rem;
+}
+
+.sensor-value {
+    font-weight: bold;
+    margin: 0.5rem 0;
+    font-size: 2.5rem;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    display: inline-block;
+}
+
+.status-ok {
+    background-color: #28a745;
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+}
+
+.status-warning {
+    background-color: #ffc107;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+}
+
+.status-off {
+    background-color: #6c757d;
+}
+
+.status-error {
+    background-color: #dc3545;
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+}
+
+/* Control panel styles */
+.control-panel {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.control-panel .card-header {
+    background: rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Button animations */
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Auto-refresh indicator */
+.auto-refresh-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: #28a745;
+    border-radius: 50%;
+    margin-left: 0.5rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Responsive adjustments for dashboard */
+@media (max-width: 768px) {
+    .sensor-value {
+        font-size: 2rem;
+    }
+    
+    .sensor-card {
+        margin-bottom: 1rem;
+    }
+    
+    .status-indicator {
+        font-size: 0.9rem;
+    }
+}
+
+/* Loading animation for sensor updates */
+.sensor-updating {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.sensor-updating .sensor-value {
+    animation: pulse 1s infinite;
+}
+
+/* Card hover effects */
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Clickable card styles */
+.clickable-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.clickable-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.clickable-card:active {
+    transform: translateY(-4px);
+}
+
+/* Floating Groot Assistant button */
+.groot-assist-btn {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    width: 68px;
+    height: 68px;
+    background: linear-gradient(135deg, #16a34a, #10b981);
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
+    z-index: 1050;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    text-decoration: none;
+}
+
+.groot-assist-btn:focus {
+    outline: 3px solid rgba(40,167,69,0.25);
+    outline-offset: 2px;
+}
+
+.groot-assist-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    color: #fff;
+}
+
+.groot-assist-icon i {
+    font-size: 24px;
+}
+
+@media (max-width: 576px) {
+    .groot-assist-btn {
+        right: 14px;
+        bottom: 14px;
+        width: 58px;
+        height: 58px;
+    }
+}
+
+/* Pulsing ring behind the button */
+.groot-assist-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    top: 0;
+    left: 0;
+    box-shadow: 0 0 0 rgba(16,185,129, 0.6);
+    pointer-events: none;
+    transform: scale(1);
+    z-index: 1048;
+}
+
+@keyframes assistPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(16,185,129, 0.6);
+        transform: scale(1);
+    }
+    70% {
+        box-shadow: 0 0 0 14px rgba(16,185,129, 0);
+        transform: scale(1.05);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(16,185,129, 0);
+        transform: scale(1);
+    }
+}
+
+.groot-assist-btn.has-convo .groot-assist-ring {
+    animation: assistPulse 2.5s infinite ease-out;
+}
+
+/* Badge showing conversation count */
+.groot-assist-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background: #ef4444;
+    color: #fff;
+    border-radius: 999px;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    z-index: 1052;
+}
+
+/* Hover label */
+.groot-assist-label {
+    position: fixed;
+    right: 100px;
+    bottom: 34px;
+    background: #ffffff;
+    color: #111827;
+    padding: 6px 10px;
+    border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    font-weight: 600;
+    font-size: 13px;
+    display: none;
+    z-index: 1049;
+}
+
+.groot-assist-btn:hover + .groot-assist-label,
+.groot-assist-btn:focus + .groot-assist-label {
+    display: block;
+}
+
+/* Make ring visible always but animated only when has-convo */
+.groot-assist-ring {
+    border: 2px solid rgba(255,255,255,0.06);
+}

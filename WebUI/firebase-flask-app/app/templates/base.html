@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Firebase Flask App{% endblock %}</title>
+    <title>{% block title %}Green Growth - GROOT{% endblock %}</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     
@@ -16,17 +18,38 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('web.index') }}">Firebase Flask App</a>
+            <a class="navbar-brand" href="{{ url_for('web.index') }}">
+                <i class="fas fa-seedling me-2" style="color: #28a745;"></i>Green Growth - GROOT
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('web.index') }}">Home</a>
+                        <a class="nav-link" href="{{ url_for('web.index') }}">
+                            <i class="fas fa-home me-1"></i>Dashboard
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('web.about') }}">About</a>
+                        <a class="nav-link" href="{{ url_for('web.about') }}">
+                            <i class="fas fa-info-circle me-1"></i>About
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('web.settings') }}">
+                            <i class="fas fa-cog me-1"></i>Settings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('web.assistant') }}">
+                            <i class="fas fa-robot me-1"></i>Groot Assistant
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('web.logout') }}" onclick="return confirm('Are you sure you want to logout?')">
+                            <i class="fas fa-sign-out-alt me-1"></i>Logout
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -55,9 +78,21 @@
     <!-- Footer -->
     <footer class="bg-dark text-light text-center py-3 mt-5">
         <div class="container">
-            <p>&copy; 2024 Firebase Flask App. All rights reserved.</p>
+            <p>&copy; 2025 Green Growth - GROOT. All rights reserved.</p>
         </div>
     </footer>
+
+    <!-- Floating Groot Assistant button (more visible) -->
+    {% set _convo = session.get('assistant_convo', []) %}
+    {% set _convo_len = _convo|length if _convo is not none else 0 %}
+    <a href="{{ url_for('web.assistant') }}" class="groot-assist-btn {% if _convo_len > 0 %}has-convo{% endif %}" aria-label="Open Groot Assistant" title="Groot Assistant">
+        <span class="groot-assist-ring" aria-hidden="true"></span>
+        <span class="groot-assist-icon" aria-hidden="true"><i class="fas fa-robot"></i></span>
+        {% if _convo_len > 0 %}
+            <span class="groot-assist-badge" aria-hidden="true">{{ _convo_len }}</span>
+        {% endif %}
+    </a>
+    <div class="groot-assist-label" aria-hidden="true">GROOT AI</div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

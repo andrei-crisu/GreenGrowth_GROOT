@@ -115,7 +115,8 @@ void checkDeviceNameUpdate() {
   }
 }
 
-void setup() {
+void setup() 
+{
   Serial.begin(115200);
   
   dht11.begin(); // initialize the DHT11 sensor
