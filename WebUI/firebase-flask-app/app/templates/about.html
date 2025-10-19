@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}About - Green Growth - GROOT{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-seedling me-2" style="color: #28a745;"></i>About Green Growth - GROOT
+        </h1>
+        <p class="lead">A smart plant monitoring system built with Flask and Firebase Firestore for optimal plant growth.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Features</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-seedling text-success me-2"></i>
+                        <strong>Plant Monitoring:</strong> Real-time temperature, humidity, and light tracking
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-tint text-info me-2"></i>
+                        <strong>Smart Irrigation:</strong> Automated pump control for optimal watering
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-chart-line text-warning me-2"></i>
+                        <strong>Data Analytics:</strong> Historical sensor data and growth insights
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-mobile-alt text-primary me-2"></i>
+                        <strong>Mobile Responsive:</strong> Monitor your plants from anywhere
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-bell text-danger me-2"></i>
+                        <strong>Smart Alerts:</strong> Notifications for optimal growing conditions
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">How this helps you</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <strong>Simple Monitoring:</strong> See your plants' conditions at a glance
+                    </li>
+                    <li class="mb-2">
+                        <strong>Automated Care:</strong> The system can automate watering based on thresholds
+                    </li>
+                    <li class="mb-2">
+                        <strong>Insights:</strong> View historical trends to improve plant health
+                    </li>
+                    <li class="mb-2">
+                        <strong>Responsive UI:</strong> Works on desktop and mobile devices
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Getting Started</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-2">To get started, contact your administrator to receive access credentials and deployment instructions specific to your environment. This application is maintained by the Green Growth team and configured centrally for production deployments.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
