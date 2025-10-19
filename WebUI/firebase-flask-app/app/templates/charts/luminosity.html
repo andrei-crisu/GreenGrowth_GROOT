@@ -70,6 +70,8 @@
                     <div class="col-md-3">
                         <label for="timeRange" class="form-label">Time Range:</label>
                         <select class="form-select" id="timeRange">
+                            <option value="5m">Last 5 Minutes</option>
+                            <option value="10m">Last 10 Minutes</option>
                             <option value="1h">Last Hour</option>
                             <option value="6h" selected>Last 6 Hours</option>
                             <option value="24h">Last 24 Hours</option>
@@ -282,7 +284,15 @@ function initializeChart() {
 
 function loadLuminosityData() {
     console.log('Loading luminosity data...');
-    fetch('/api/sensors/luminosity')
+    const timeRange = document.getElementById('timeRange').value;
+    
+    // Get the selected device from the URL or use the first available device
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedDevice = urlParams.get('device') || '';
+    
+    const url = `/api/sensors/luminosity?timeRange=${timeRange}&device=${selectedDevice}`;
+    
+    fetch(url)
         .then(response => response.json())
         .then(data => {
             console.log('Luminosity data received:', data);

@@ -94,6 +94,54 @@
     </div>
 </div>
 
+<!-- Chart Controls -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Chart Controls</h5>
+            </div>
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <label for="timeRange" class="form-label">Time Range:</label>
+                        <select class="form-select" id="timeRange">
+                            <option value="5m">Last 5 Minutes</option>
+                            <option value="10m">Last 10 Minutes</option>
+                            <option value="1h">Last Hour</option>
+                            <option value="6h" selected>Last 6 Hours</option>
+                            <option value="24h">Last 24 Hours</option>
+                            <option value="7d">Last 7 Days</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="refreshInterval" class="form-label">Refresh:</label>
+                        <select class="form-select" id="refreshInterval">
+                            <option value="5">5 seconds</option>
+                            <option value="10">10 seconds</option>
+                            <option value="30" selected>30 seconds</option>
+                            <option value="60">1 minute</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-check form-switch mt-4">
+                            <input class="form-check-input" type="checkbox" id="autoRefresh" checked>
+                            <label class="form-check-label" for="autoRefresh">
+                                Auto Refresh
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary mt-3" onclick="refreshData()">
+                            <i class="fas fa-sync-alt me-1"></i>Refresh Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Main Chart -->
 <div class="row">
     <div class="col-12">
@@ -238,7 +286,15 @@ function initializeChart() {
 
 function loadPumpData() {
     console.log('Loading pump data...');
-    fetch('/api/sensors/pump')
+    const timeRange = document.getElementById('timeRange').value;
+    
+    // Get the selected device from the URL or use the first available device
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedDevice = urlParams.get('device') || '';
+    
+    const url = `/api/sensors/pump?timeRange=${timeRange}&device=${selectedDevice}`;
+    
+    fetch(url)
         .then(response => response.json())
         .then(data => {
             console.log('Pump data received:', data);

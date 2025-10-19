@@ -124,8 +124,13 @@ def index():
                 latest_timestamp = 0
                 
                 if all_devices:
+                    # If no device selected, automatically select the first device found
+                    if not selected_device:
+                        selected_device = list(all_devices.keys())[0]
+                        print(f"DEBUG: Auto-selected first device: {selected_device}")
+                    
+                    # Always get data from the selected device only
                     if selected_device and selected_device in all_devices:
-                        # Get latest reading from selected device only
                         device_data = all_devices[selected_device]
                         readings = device_data.get('readings', {})
                         for timestamp_key, reading in readings.items():
@@ -137,19 +142,32 @@ def index():
                             except (ValueError, TypeError):
                                 continue
                     else:
-                        # Get latest reading from all devices
-                        for mac_address, device_data in all_devices.items():
-                            readings = device_data.get('readings', {})
-                            for timestamp_key, reading in readings.items():
-                                try:
-                                    timestamp_val = int(timestamp_key)
-                                    if timestamp_val > latest_timestamp:
-                                        latest_timestamp = timestamp_val
-                                        latest_reading = reading
-                                except (ValueError, TypeError):
-                                    continue
+                        # If selected device not found, use the first available device
+                        first_device = list(all_devices.keys())[0]
+                        print(f"DEBUG: Selected device not found, using first device: {first_device}")
+                        device_data = all_devices[first_device]
+                        readings = device_data.get('readings', {})
+                        for timestamp_key, reading in readings.items():
+                            try:
+                                timestamp_val = int(timestamp_key)
+                                if timestamp_val > latest_timestamp:
+                                    latest_timestamp = timestamp_val
+                                    latest_reading = reading
+                            except (ValueError, TypeError):
+                                continue
                 
                 if latest_reading:
+                    # Get device name from info section first, then fallback to reading
+                    device_name = None
+                    if selected_device and selected_device in all_devices:
+                        device_data = all_devices[selected_device]
+                        device_info = device_data.get('info', {})
+                        device_name = device_info.get('name')
+                    
+                    # Fallback to reading if no name in info
+                    if not device_name:
+                        device_name = latest_reading.get('device_name')
+                    
                     sensor_data = {
                         'temperature': latest_reading.get('temperature'),
                         'humidity': latest_reading.get('humidity'),
@@ -158,7 +176,7 @@ def index():
                         'moisture': latest_reading.get('moisture', 0),
                         'pump_status': 'ON' if latest_reading.get('pressure', 0) > 1000 else 'OFF',
                         'mac_address': latest_reading.get('mac_address', 'Unknown'),
-                        'device_name': latest_reading.get('device_name', latest_reading.get('mac_address', 'Unknown')),
+                        'device_name': device_name or latest_reading.get('mac_address', 'Unknown'),
                         'last_updated': latest_reading.get('timestamp', 'Unknown'),
                         'source': 'firebase_realtime_db'
                     }

@@ -14,7 +14,6 @@
             <div class="col-md-4">
                 <div class="device-selector">
                     <select class="form-select form-select-sm" id="device-selector" onchange="changeDevice()">
-                        <option value="">All Devices</option>
                         <!-- Devices will be populated by JavaScript -->
                     </select>
                 </div>
@@ -32,7 +31,7 @@
 <div class="row mb-4">
     <!-- Temperature Card -->
     <div class="col-md-3 col-sm-6 mb-3">
-        <div class="card sensor-card temperature-card clickable-card" onclick="window.location.href='{{ url_for('web.temperature_chart') }}'">
+        <div class="card sensor-card temperature-card clickable-card" onclick="navigateToChart('temperature')">
             <div class="card-body text-center">
                 <div class="sensor-icon">
                     <i class="fas fa-thermometer-half fa-3x text-danger"></i>
@@ -46,7 +45,7 @@
 
     <!-- Humidity Card -->
     <div class="col-md-3 col-sm-6 mb-3">
-        <div class="card sensor-card humidity-card clickable-card" onclick="window.location.href='{{ url_for('web.humidity_chart') }}'">
+        <div class="card sensor-card humidity-card clickable-card" onclick="navigateToChart('humidity')">
             <div class="card-body text-center">
                 <div class="sensor-icon">
                     <i class="fas fa-tint fa-3x text-info"></i>
@@ -60,7 +59,7 @@
 
     <!-- Luminosity Card -->
     <div class="col-md-3 col-sm-6 mb-3">
-        <div class="card sensor-card luminosity-card clickable-card" onclick="window.location.href='{{ url_for('web.luminosity_chart') }}'">
+        <div class="card sensor-card luminosity-card clickable-card" onclick="navigateToChart('luminosity')">
             <div class="card-body text-center">
                 <div class="sensor-icon">
                     <i class="fas fa-sun fa-3x text-warning"></i>
@@ -74,7 +73,7 @@
 
     <!-- Moisture Card -->
     <div class="col-md-3 col-sm-6 mb-3">
-        <div class="card sensor-card moisture-card clickable-card" onclick="window.location.href='{{ url_for('web.humidity_chart') }}'">
+        <div class="card sensor-card moisture-card clickable-card" onclick="navigateToChart('humidity')">
             <div class="card-body text-center">
                 <div class="sensor-icon">
                     <i class="fas fa-seedling fa-3x text-success"></i>
@@ -91,7 +90,7 @@
 <div class="row mb-4">
     <!-- Pump Status Card -->
     <div class="col-md-6 col-sm-6 mb-3">
-        <div class="card sensor-card pump-card clickable-card" onclick="window.location.href='{{ url_for('web.pump_chart') }}'">
+        <div class="card sensor-card pump-card clickable-card" onclick="navigateToChart('pump')">
             <div class="card-body text-center">
                 <div class="sensor-icon">
                     <i class="fas fa-tint fa-3x" id="pump-icon"></i>
@@ -105,7 +104,7 @@
 
     <!-- Pressure Card -->
     <div class="col-md-6 col-sm-6 mb-3">
-        <div class="card sensor-card pressure-card clickable-card" onclick="window.location.href='{{ url_for('web.humidity_chart') }}'">
+        <div class="card sensor-card pressure-card clickable-card" onclick="navigateToChart('humidity')">
             <div class="card-body text-center">
                 <div class="sensor-icon">
                     <i class="fas fa-compress-arrows-alt fa-3x text-secondary"></i>
@@ -521,9 +520,9 @@ function loadAvailableDevices() {
     fetch('/api/devices')
         .then(response => response.json())
         .then(data => {
-            if (data.success && data.devices) {
+            if (data.success && data.devices && data.devices.length > 0) {
                 const selector = document.getElementById('device-selector');
-                selector.innerHTML = '<option value="">All Devices</option>';
+                selector.innerHTML = ''; // Clear all options
                 
                 // Get current selected device from URL
                 const urlParams = new URLSearchParams(window.location.search);
@@ -538,10 +537,33 @@ function loadAvailableDevices() {
                     }
                     selector.appendChild(option);
                 });
+                
+                // Always select a device - if no device is selected, auto-select the first one
+                if (!selectedDevice || !selector.value) {
+                    const firstDevice = data.devices[0];
+                    selector.value = firstDevice.mac_address;
+                    console.log('Auto-selecting first device:', firstDevice.device_name || firstDevice.mac_address);
+                    
+                    // Update URL to reflect the selected device
+                    const url = new URL(window.location);
+                    url.searchParams.set('device', firstDevice.mac_address);
+                    window.history.replaceState({}, '', url.toString());
+                    
+                    // Reload the page to show data for the selected device
+                    window.location.reload();
+                }
+            } else {
+                // No devices available - show a message
+                const selector = document.getElementById('device-selector');
+                selector.innerHTML = '<option value="">No devices available</option>';
+                selector.disabled = true;
             }
         })
         .catch(error => {
             console.error('Error loading devices:', error);
+            const selector = document.getElementById('device-selector');
+            selector.innerHTML = '<option value="">Error loading devices</option>';
+            selector.disabled = true;
         });
 }
 
@@ -559,6 +581,28 @@ function changeDevice() {
     
     // Reload page with new device selection
     window.location.href = url.toString();
+}
+
+// Navigate to chart with selected device
+function navigateToChart(chartType) {
+    const selectedDevice = document.getElementById('device-selector').value;
+    
+    // Chart type to URL mapping
+    const chartUrls = {
+        'temperature': '{{ url_for("web.temperature_chart") }}',
+        'humidity': '{{ url_for("web.humidity_chart") }}',
+        'luminosity': '{{ url_for("web.luminosity_chart") }}',
+        'pump': '{{ url_for("web.pump_chart") }}'
+    };
+    
+    const baseUrl = chartUrls[chartType];
+    if (baseUrl) {
+        const url = new URL(baseUrl, window.location.origin);
+        if (selectedDevice) {
+            url.searchParams.set('device', selectedDevice);
+        }
+        window.location.href = url.toString();
+    }
 }
 
 // Clean up on page unload
