@@ -418,6 +418,11 @@ def temperature_chart():
     """Render the temperature chart page."""
     return render_template('charts/temperature.html')
 
+@web_bp.route('/test-chart')
+def test_chart():
+    """Test chart page without login requirement."""
+    return render_template('test_chart.html')
+
 @web_bp.route('/charts/humidity')
 @login_required
 def humidity_chart():

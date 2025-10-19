@@ -199,6 +199,249 @@ def get_sensors():
             'error': str(e)
         }), 500
 
+@api_bp.route('/sensors/temperature', methods=['GET'])
+def get_temperature_data():
+    """Get temperature data for charts."""
+    try:
+        print("DEBUG: Temperature API called")
+        db = get_db()
+        
+        if db is None:
+            print("DEBUG: Using mock data for temperature")
+            # Return mock data for charts
+            import random
+            from datetime import datetime, timedelta
+            
+            # Generate mock temperature data for the last 24 hours
+            data_points = 24
+            labels = []
+            values = []
+            
+            for i in range(data_points):
+                time = datetime.now() - timedelta(hours=data_points-i-1)
+                labels.append(time.strftime('%H:%M'))
+                values.append(round(random.uniform(20.0, 30.0), 1))
+            
+            result = {
+                'success': True,
+                'data': {
+                    'labels': labels,
+                    'values': values
+                },
+                'statistics': {
+                    'min': min(values),
+                    'max': max(values),
+                    'avg': sum(values) / len(values)
+                }
+            }
+            print(f"DEBUG: Returning mock data with {len(values)} points")
+            return jsonify(result)
+        
+        # Get real data from Firebase
+        reader = SensorDataReader()
+        all_devices = reader.get_all_devices_data()
+        
+        if not all_devices:
+            return jsonify({
+                'success': False,
+                'error': 'No data available'
+            })
+        
+        # Collect temperature data from all devices
+        temperature_data = []
+        for mac_address, device_data in all_devices.items():
+            readings = device_data.get('readings', {})
+            for timestamp_key, reading in readings.items():
+                if reading.get('temperature') is not None:
+                    temperature_data.append({
+                        'timestamp': int(timestamp_key),
+                        'value': float(reading['temperature']),
+                        'device': mac_address
+                    })
+        
+        # Sort by timestamp
+        temperature_data.sort(key=lambda x: x['timestamp'])
+        
+        # Get last 24 hours of data
+        from datetime import datetime, timedelta
+        # Try both seconds and milliseconds for timestamp comparison
+        cutoff_time_seconds = int((datetime.now() - timedelta(hours=24)).timestamp())
+        cutoff_time_milliseconds = int((datetime.now() - timedelta(hours=24)).timestamp() * 1000)
+        current_time_seconds = int(datetime.now().timestamp())
+        
+        # Try to determine timestamp format by comparing with current time
+        sample_timestamp = temperature_data[-1]['timestamp'] if temperature_data else 0
+        if sample_timestamp > current_time_seconds:
+            # Timestamps are in milliseconds
+            cutoff_time = cutoff_time_milliseconds
+        else:
+            # Timestamps are in seconds
+            cutoff_time = cutoff_time_seconds
+        
+        recent_data = [d for d in temperature_data if d['timestamp'] > cutoff_time]
+        
+        # If no recent data, use all available data (last 50 points)
+        if not recent_data and temperature_data:
+            recent_data = temperature_data[-50:]
+        
+        # Format for chart
+        labels = []
+        values = []
+        for data_point in recent_data[-50:]:  # Last 50 points
+            time = datetime.fromtimestamp(data_point['timestamp'] / 1000)
+            labels.append(time.strftime('%H:%M'))
+            values.append(data_point['value'])
+        
+        if values:
+            stats = {
+                'min': min(values),
+                'max': max(values),
+                'avg': sum(values) / len(values)
+            }
+        else:
+            stats = {'min': 0, 'max': 0, 'avg': 0}
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'labels': labels,
+                'values': values
+            },
+            'statistics': stats
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@api_bp.route('/sensors/humidity', methods=['GET'])
+def get_humidity_data():
+    """Get humidity data for charts."""
+    try:
+        print("DEBUG: Humidity API called")
+        db = get_db()
+        
+        if db is None:
+            print("DEBUG: Using mock data for humidity")
+            # Return mock data for charts
+            import random
+            from datetime import datetime, timedelta
+            
+            # Generate mock humidity data for the last 24 hours
+            data_points = 24
+            labels = []
+            values = []
+            
+            for i in range(data_points):
+                time = datetime.now() - timedelta(hours=data_points-i-1)
+                labels.append(time.strftime('%H:%M'))
+                values.append(round(random.uniform(40.0, 80.0), 1))
+            
+            result = {
+                'success': True,
+                'data': {
+                    'labels': labels,
+                    'values': values
+                },
+                'statistics': {
+                    'min': min(values),
+                    'max': max(values),
+                    'avg': sum(values) / len(values)
+                }
+            }
+            print(f"DEBUG: Returning mock data with {len(values)} points")
+            return jsonify(result)
+        
+        # Get real data from Firebase
+        reader = SensorDataReader()
+        all_devices = reader.get_all_devices_data()
+        
+        if not all_devices:
+            return jsonify({
+                'success': False,
+                'error': 'No data available'
+            })
+        
+        # Collect humidity data from all devices
+        humidity_data = []
+        for mac_address, device_data in all_devices.items():
+            readings = device_data.get('readings', {})
+            for timestamp_key, reading in readings.items():
+                if reading.get('humidity') is not None:
+                    humidity_data.append({
+                        'timestamp': int(timestamp_key),
+                        'value': float(reading['humidity']),
+                        'device': mac_address
+                    })
+        
+        # Sort by timestamp
+        humidity_data.sort(key=lambda x: x['timestamp'])
+        
+        # Get last 24 hours of data
+        from datetime import datetime, timedelta
+        # Try both seconds and milliseconds for timestamp comparison
+        cutoff_time_seconds = int((datetime.now() - timedelta(hours=24)).timestamp())
+        cutoff_time_milliseconds = int((datetime.now() - timedelta(hours=24)).timestamp() * 1000)
+        current_time_seconds = int(datetime.now().timestamp())
+        
+        # Try to determine timestamp format by comparing with current time
+        sample_timestamp = humidity_data[-1]['timestamp'] if humidity_data else 0
+        if sample_timestamp > current_time_seconds:
+            # Timestamps are in milliseconds
+            cutoff_time = cutoff_time_milliseconds
+        else:
+            # Timestamps are in seconds
+            cutoff_time = cutoff_time_seconds
+        
+        recent_data = [d for d in humidity_data if d['timestamp'] > cutoff_time]
+        
+        # If no recent data, use all available data (last 50 points)
+        if not recent_data and humidity_data:
+            recent_data = humidity_data[-50:]
+        
+        # Format for chart
+        labels = []
+        values = []
+        for data_point in recent_data[-50:]:  # Last 50 points
+            time = datetime.fromtimestamp(data_point['timestamp'] / 1000)
+            labels.append(time.strftime('%H:%M'))
+            values.append(data_point['value'])
+        
+        if values:
+            stats = {
+                'min': min(values),
+                'max': max(values),
+                'avg': sum(values) / len(values)
+            }
+        else:
+            stats = {'min': 0, 'max': 0, 'avg': 0}
+        
+        return jsonify({
+            'success': True,
+            'data': {
+                'labels': labels,
+                'values': values
+            },
+            'statistics': stats
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@api_bp.route('/test', methods=['GET'])
+def test_endpoint():
+    """Simple test endpoint."""
+    return jsonify({
+        'success': True,
+        'message': 'API is working',
+        'timestamp': datetime.now().isoformat()
+    })
+
 @api_bp.route('/pump', methods=['POST'])
 def toggle_pump():
     """Toggle pump status."""
