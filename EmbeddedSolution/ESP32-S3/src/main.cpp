@@ -16,9 +16,11 @@
 #define API_KEY "AIzaSyBj3A2B8LSgEA1_OUOZlU8sQp4njnxXOis"
 #define DATABASE_URL "https://groot-f61e8-default-rtdb.europe-west1.firebasedatabase.app/"
 
-#define UPDATE_INTERVAL_MS          3000
+#define UPDATE_INTERVAL_MS          15000
 #define SENSOR_AIR_TEMP_HUMID_PIN   9
 #define SENSOR_SOIL_HUMID_PIN       10
+#define SENSOR_LIGHT_PIN            11
+
 
 DHT dht11(SENSOR_AIR_TEMP_HUMID_PIN, DHT11);
 
@@ -200,10 +202,14 @@ void loop() {
     temperature = dht11.readTemperature();
     humidity = dht11.readHumidity();
     
+    // int light_level_val_ADC = analogRead(SENSOR_LIGHT_PIN);
+    // int light_level = map(light_level_val_ADC, 0, 4096, 0, 100);
+    int light_level = analogRead(SENSOR_LIGHT_PIN);
+    
     // Simulate sensor readings (replace with actual sensor values)
     //float humidity = 45.0 + random(0, 30);        // 45-75%
     //float temperature = 20.0 + random(0, 15);     // 20-35°C
-    int light_level = 300 + random(0, 700);       // 300-1000 lux
+    // int light_level = 300 + random(0, 700);       // 300-1000 lux
     //float moisture = 30.0 + random(0, 40);        // 30-70%
     float pressure = 1010.0 + random(0, 20);      // 1010-1030 hPa
     
