@@ -9,7 +9,7 @@
 #include <DHT.h>
 
 // WiFi credentials
-#define WIFI_SSID "CRAIOVA HACKATHON"
+#define WIFI_SSID "CRAIOVA HACKATON"
 #define WIFI_PASSWORD "20252025"
 
 // Firebase configuration
@@ -235,9 +235,9 @@ void loop() {
       Serial.println("] Data sent!");
       Serial.print("Humidity: ");
       Serial.print(humidity);
-      Serial.print("°C | Temp: ");
+      Serial.print("% | Temp: ");
       Serial.print(temperature);
-      Serial.print("°% | Light: ");
+      Serial.print("°C | Light: ");
       Serial.print(light_level);
       Serial.print(" | Moisture: ");
       Serial.print(moisture);
