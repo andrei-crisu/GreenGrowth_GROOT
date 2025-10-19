@@ -3,16 +3,32 @@
 {% block title %}Green Growth - GROOT Dashboard{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <h1 class="mb-4">
-            <i class="fas fa-seedling me-2" style="color: #28a745;"></i>Green Growth - GROOT Dashboard
-        </h1>
-        <p class="lead">Real-time monitoring of temperature, humidity, luminosity, and pump status for optimal plant growth.</p>
+<!-- Main Dashboard Container with Background -->
+<div class="dashboard-container">
+    <!-- Minimal Header -->
+    <div class="dashboard-header">
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <h3 class="mb-0">Dashboard</h3>
+            </div>
+            <div class="col-md-4">
+                <div class="device-selector">
+                    <select class="form-select form-select-sm" id="device-selector" onchange="changeDevice()">
+                        <option value="">All Devices</option>
+                        <!-- Devices will be populated by JavaScript -->
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <small class="text-muted">
+                    <i class="fas fa-microchip me-1"></i><span id="device-name">{{ sensor_data.device_name or sensor_data.mac_address }}</span> | 
+                    <i class="fas fa-circle text-success me-1"></i><span id="connection-status">Connected</span>
+                </small>
+            </div>
+        </div>
     </div>
-</div>
 
-<!-- Sensor Cards Row -->
+<!-- First Row - Main Environmental Parameters -->
 <div class="row mb-4">
     <!-- Temperature Card -->
     <div class="col-md-3 col-sm-6 mb-3">
@@ -22,7 +38,7 @@
                     <i class="fas fa-thermometer-half fa-3x text-danger"></i>
                 </div>
                 <h5 class="card-title mt-3">Temperature</h5>
-                <h2 class="sensor-value" id="temperature-value">{{ "%.1f"|format(sensor_data.temperature) }}°C</h2>
+                <h2 class="sensor-value" id="temperature-value">{{ "%.1f"|format(sensor_data.temperature) if sensor_data.temperature and sensor_data.temperature != 0 else "N/A" }}°C</h2>
                 <p class="card-text text-muted">Click to view chart</p>
             </div>
         </div>
@@ -36,7 +52,7 @@
                     <i class="fas fa-tint fa-3x text-info"></i>
                 </div>
                 <h5 class="card-title mt-3">Humidity</h5>
-                <h2 class="sensor-value" id="humidity-value">{{ "%.1f"|format(sensor_data.humidity) }}%</h2>
+                <h2 class="sensor-value" id="humidity-value">{{ "%.1f"|format(sensor_data.humidity) if sensor_data.humidity and sensor_data.humidity != 0 else "N/A" }}%</h2>
                 <p class="card-text text-muted">Click to view chart</p>
             </div>
         </div>
@@ -56,8 +72,25 @@
         </div>
     </div>
 
-    <!-- Pump Status Card -->
+    <!-- Moisture Card -->
     <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card sensor-card moisture-card clickable-card" onclick="window.location.href='{{ url_for('web.humidity_chart') }}'">
+            <div class="card-body text-center">
+                <div class="sensor-icon">
+                    <i class="fas fa-seedling fa-3x text-success"></i>
+                </div>
+                <h5 class="card-title mt-3">Moisture</h5>
+                <h2 class="sensor-value" id="moisture-value">{{ sensor_data.moisture }}</h2>
+                <p class="card-text text-muted">Click to view chart</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Second Row - System Status -->
+<div class="row mb-4">
+    <!-- Pump Status Card -->
+    <div class="col-md-6 col-sm-6 mb-3">
         <div class="card sensor-card pump-card clickable-card" onclick="window.location.href='{{ url_for('web.pump_chart') }}'">
             <div class="card-body text-center">
                 <div class="sensor-icon">
@@ -65,6 +98,20 @@
                 </div>
                 <h5 class="card-title mt-3">Pump Status</h5>
                 <h2 class="sensor-value" id="pump-status">{{ sensor_data.pump_status }}</h2>
+                <p class="card-text text-muted">Click to view chart</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pressure Card -->
+    <div class="col-md-6 col-sm-6 mb-3">
+        <div class="card sensor-card pressure-card clickable-card" onclick="window.location.href='{{ url_for('web.humidity_chart') }}'">
+            <div class="card-body text-center">
+                <div class="sensor-icon">
+                    <i class="fas fa-compress-arrows-alt fa-3x text-secondary"></i>
+                </div>
+                <h5 class="card-title mt-3">Pressure</h5>
+                <h2 class="sensor-value" id="pressure-value">{{ sensor_data.pressure }} hPa</h2>
                 <p class="card-text text-muted">Click to view chart</p>
             </div>
         </div>
@@ -97,7 +144,7 @@
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="auto-refresh" checked>
                             <label class="form-check-label" for="auto-refresh">
-                                Enable auto-refresh (30s)
+                                Enable auto-refresh (3s)
                             </label>
                         </div>
                     </div>
@@ -116,25 +163,37 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="status-indicator">
                             <span class="status-dot" id="temp-status"></span>
                             <span>Temperature OK</span>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="status-indicator">
                             <span class="status-dot" id="humidity-status"></span>
                             <span>Humidity OK</span>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="status-indicator">
                             <span class="status-dot" id="light-status"></span>
                             <span>Light OK</span>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
+                        <div class="status-indicator">
+                            <span class="status-dot" id="moisture-status"></span>
+                            <span>Moisture OK</span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="status-indicator">
+                            <span class="status-dot" id="pressure-status"></span>
+                            <span>Pressure OK</span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
                         <div class="status-indicator">
                             <span class="status-dot" id="pump-indicator"></span>
                             <span>Pump {{ sensor_data.pump_status }}</span>
@@ -145,6 +204,113 @@
         </div>
     </div>
 </div>
+</div> <!-- End dashboard-container -->
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Dashboard Container with Background */
+.dashboard-container {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin: -1rem;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+/* Device Selector */
+.device-selector .form-select {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    transition: all 0.2s ease;
+}
+
+.device-selector .form-select:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+
+/* Enhanced Sensor Cards */
+.sensor-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.sensor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* Control Panel Enhancement */
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+/* Status Indicators Enhancement */
+.status-indicator {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    display: inline-block;
+}
+
+.status-ok {
+    background-color: #28a745;
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+}
+
+.status-warning {
+    background-color: #ffc107;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+}
+
+.status-off {
+    background-color: #6c757d;
+    box-shadow: 0 0 10px rgba(108, 117, 125, 0.5);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
+        margin: -0.5rem;
+    }
+    
+    .dashboard-header {
+        padding: 0.4rem 0.8rem;
+        margin-bottom: 0.8rem;
+    }
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}
@@ -158,6 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updatePumpStatus();
     updateStatusIndicators();
     startAutoRefresh();
+    loadAvailableDevices();
     
     // Setup auto-refresh toggle
     document.getElementById('auto-refresh').addEventListener('change', function() {
@@ -172,7 +339,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Auto-refresh functionality
 function startAutoRefresh() {
     stopAutoRefresh(); // Clear any existing interval
-    autoRefreshInterval = setInterval(refreshSensors, 30000); // 30 seconds
+    autoRefreshInterval = setInterval(refreshSensors, 3000); // 3 seconds
 }
 
 function stopAutoRefresh() {
@@ -199,12 +366,55 @@ function refreshSensors() {
 
 // Update sensor values on the page
 function updateSensorValues(sensorData) {
-    document.getElementById('temperature-value').textContent = sensorData.temperature.toFixed(1) + '°C';
-    document.getElementById('humidity-value').textContent = sensorData.humidity.toFixed(1) + '%';
-    document.getElementById('luminosity-value').textContent = sensorData.luminosity + ' lux';
-    document.getElementById('pump-status').textContent = sensorData.pump_status;
+    // Handle temperature
+    if (sensorData.temperature !== null && sensorData.temperature !== undefined && sensorData.temperature !== 0) {
+        document.getElementById('temperature-value').textContent = sensorData.temperature.toFixed(1) + '°C';
+    } else {
+        document.getElementById('temperature-value').textContent = 'N/A';
+    }
     
-    isPumpOn = sensorData.pump_status === 'ON';
+    // Handle humidity
+    if (sensorData.humidity !== null && sensorData.humidity !== undefined) {
+        document.getElementById('humidity-value').textContent = sensorData.humidity.toFixed(1) + '%';
+    } else {
+        document.getElementById('humidity-value').textContent = 'N/A';
+    }
+    
+    // Handle luminosity/light_level
+    const lightValue = sensorData.luminosity || sensorData.light_level;
+    if (lightValue !== null && lightValue !== undefined) {
+        document.getElementById('luminosity-value').textContent = lightValue + ' lux';
+    } else {
+        document.getElementById('luminosity-value').textContent = 'N/A';
+    }
+    
+    // Handle moisture
+    if (sensorData.moisture !== null && sensorData.moisture !== undefined) {
+        document.getElementById('moisture-value').textContent = sensorData.moisture;
+    } else {
+        document.getElementById('moisture-value').textContent = 'N/A';
+    }
+    
+    // Handle pressure
+    if (sensorData.pressure !== null && sensorData.pressure !== undefined) {
+        document.getElementById('pressure-value').textContent = sensorData.pressure + ' hPa';
+    } else {
+        document.getElementById('pressure-value').textContent = 'N/A';
+    }
+    
+    // Handle device info in header
+    const deviceName = sensorData.device_name || sensorData.mac_address;
+    if (deviceName !== null && deviceName !== undefined) {
+        document.getElementById('device-name').textContent = deviceName;
+    } else {
+        document.getElementById('device-name').textContent = 'N/A';
+    }
+    
+    // Handle pump status (use pressure as pump indicator for now)
+    const pumpStatus = sensorData.pressure && sensorData.pressure > 1000 ? 'ON' : 'OFF';
+    document.getElementById('pump-status').textContent = pumpStatus;
+    
+    isPumpOn = pumpStatus === 'ON';
     updatePumpStatus();
     updateStatusIndicators();
 }
@@ -260,19 +470,34 @@ function updateStatusIndicators() {
     const tempStatus = document.getElementById('temp-status');
     const humidityStatus = document.getElementById('humidity-status');
     const lightStatus = document.getElementById('light-status');
+    const moistureStatus = document.getElementById('moisture-status');
+    const pressureStatus = document.getElementById('pressure-status');
     const pumpIndicator = document.getElementById('pump-indicator');
     
     // Temperature status (normal range: 18-30°C)
-    const temp = parseFloat(document.getElementById('temperature-value').textContent);
-    tempStatus.className = 'status-dot ' + (temp >= 18 && temp <= 30 ? 'status-ok' : 'status-warning');
+    const tempText = document.getElementById('temperature-value').textContent;
+    const temp = tempText === 'N/A' ? null : parseFloat(tempText);
+    tempStatus.className = 'status-dot ' + (temp === null ? 'status-off' : (temp >= 18 && temp <= 30 ? 'status-ok' : 'status-warning'));
     
     // Humidity status (normal range: 30-70%)
-    const humidity = parseFloat(document.getElementById('humidity-value').textContent);
-    humidityStatus.className = 'status-dot ' + (humidity >= 30 && humidity <= 70 ? 'status-ok' : 'status-warning');
+    const humidityText = document.getElementById('humidity-value').textContent;
+    const humidity = humidityText === 'N/A' ? null : parseFloat(humidityText);
+    humidityStatus.className = 'status-dot ' + (humidity === null ? 'status-off' : (humidity >= 30 && humidity <= 70 ? 'status-ok' : 'status-warning'));
     
     // Light status (normal range: 200-1000 lux)
-    const light = parseInt(document.getElementById('luminosity-value').textContent);
-    lightStatus.className = 'status-dot ' + (light >= 200 && light <= 1000 ? 'status-ok' : 'status-warning');
+    const lightText = document.getElementById('luminosity-value').textContent;
+    const light = lightText === 'N/A' ? null : parseInt(lightText);
+    lightStatus.className = 'status-dot ' + (light === null ? 'status-off' : (light >= 200 && light <= 1000 ? 'status-ok' : 'status-warning'));
+    
+    // Moisture status (normal range: 20-80)
+    const moistureText = document.getElementById('moisture-value').textContent;
+    const moisture = moistureText === 'N/A' ? null : parseInt(moistureText);
+    moistureStatus.className = 'status-dot ' + (moisture === null ? 'status-off' : (moisture >= 20 && moisture <= 80 ? 'status-ok' : 'status-warning'));
+    
+    // Pressure status (normal range: 1000-1030 hPa)
+    const pressureText = document.getElementById('pressure-value').textContent;
+    const pressure = pressureText === 'N/A' ? null : parseFloat(pressureText);
+    pressureStatus.className = 'status-dot ' + (pressure === null ? 'status-off' : (pressure >= 1000 && pressure <= 1030 ? 'status-ok' : 'status-warning'));
     
     // Pump indicator
     pumpIndicator.className = 'status-dot ' + (isPumpOn ? 'status-ok' : 'status-off');
@@ -283,6 +508,51 @@ function updateLastUpdated() {
     const now = new Date();
     const timeString = now.toLocaleString();
     document.getElementById('last-updated').textContent = timeString;
+}
+
+// Load available devices
+function loadAvailableDevices() {
+    fetch('/api/devices')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.devices) {
+                const selector = document.getElementById('device-selector');
+                selector.innerHTML = '<option value="">All Devices</option>';
+                
+                // Get current selected device from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const selectedDevice = urlParams.get('device') || '';
+                
+                data.devices.forEach(device => {
+                    const option = document.createElement('option');
+                    option.value = device.mac_address;
+                    option.textContent = device.device_name || device.mac_address;
+                    if (device.mac_address === selectedDevice) {
+                        option.selected = true;
+                    }
+                    selector.appendChild(option);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error loading devices:', error);
+        });
+}
+
+// Change device selection
+function changeDevice() {
+    const selectedDevice = document.getElementById('device-selector').value;
+    
+    // Update URL with device parameter
+    const url = new URL(window.location);
+    if (selectedDevice) {
+        url.searchParams.set('device', selectedDevice);
+    } else {
+        url.searchParams.delete('device');
+    }
+    
+    // Reload page with new device selection
+    window.location.href = url.toString();
 }
 
 // Clean up on page unload
