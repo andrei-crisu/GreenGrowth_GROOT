@@ -9,10 +9,8 @@
 #include <DHT.h>
 
 // WiFi credentials
-// #define WIFI_SSID "DIGIFIBRA-E3Tf"
-// #define WIFI_PASSWORD "kETCuXNTZxQ4"
-#define WIFI_SSID "DIGI-4125"
-#define WIFI_PASSWORD "xxHhn4S8"
+#define WIFI_SSID "CRAIOVA HACKATHON"
+#define WIFI_PASSWORD "20252025"
 
 // Firebase configuration
 #define API_KEY "AIzaSyBj3A2B8LSgEA1_OUOZlU8sQp4njnxXOis"
