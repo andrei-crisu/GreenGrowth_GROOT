@@ -218,7 +218,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeChart() {
-    const ctx = document.getElementById('temperatureChart').getContext('2d');
+    console.log('Initializing temperature chart...');
+    const canvas = document.getElementById('temperatureChart');
+    if (!canvas) {
+        console.error('Temperature chart canvas not found!');
+        return;
+    }
+    
+    const ctx = canvas.getContext('2d');
+    console.log('Creating Chart.js instance...');
     
     temperatureChart = new Chart(ctx, {
         type: 'line',
@@ -273,12 +281,16 @@ function initializeChart() {
 }
 
 function loadTemperatureData() {
+    console.log('Loading temperature data...');
     fetch('/api/sensors/temperature')
         .then(response => response.json())
         .then(data => {
+            console.log('Temperature data received:', data);
             if (data.success) {
                 updateChartData(data.data);
                 updateStatistics(data.statistics);
+            } else {
+                console.error('Temperature data error:', data.error);
             }
         })
         .catch(error => {
@@ -287,12 +299,19 @@ function loadTemperatureData() {
 }
 
 function updateChartData(data) {
+    console.log('Updating chart data:', data);
     currentData = data;
+    
+    if (!temperatureChart) {
+        console.error('Temperature chart not initialized!');
+        return;
+    }
     
     // Update chart
     temperatureChart.data.labels = data.labels;
     temperatureChart.data.datasets[0].data = data.values;
     temperatureChart.update();
+    console.log('Chart updated with', data.labels.length, 'data points');
     
     // Update current temperature
     if (data.values.length > 0) {

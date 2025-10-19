@@ -218,7 +218,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeChart() {
-    const ctx = document.getElementById('luminosityChart').getContext('2d');
+    console.log('Initializing luminosity chart...');
+    const canvas = document.getElementById('luminosityChart');
+    if (!canvas) {
+        console.error('Luminosity chart canvas not found!');
+        return;
+    }
+    
+    const ctx = canvas.getContext('2d');
+    console.log('Creating Chart.js instance...');
     
     luminosityChart = new Chart(ctx, {
         type: 'line',
@@ -273,12 +281,16 @@ function initializeChart() {
 }
 
 function loadLuminosityData() {
+    console.log('Loading luminosity data...');
     fetch('/api/sensors/luminosity')
         .then(response => response.json())
         .then(data => {
+            console.log('Luminosity data received:', data);
             if (data.success) {
                 updateChartData(data.data);
                 updateStatistics(data.statistics);
+            } else {
+                console.error('Luminosity data error:', data.error);
             }
         })
         .catch(error => {
@@ -287,12 +299,19 @@ function loadLuminosityData() {
 }
 
 function updateChartData(data) {
+    console.log('Updating chart data:', data);
     currentData = data;
+    
+    if (!luminosityChart) {
+        console.error('Luminosity chart not initialized!');
+        return;
+    }
     
     // Update chart
     luminosityChart.data.labels = data.labels;
     luminosityChart.data.datasets[0].data = data.values;
     luminosityChart.update();
+    console.log('Chart updated with', data.labels.length, 'data points');
     
     // Update current luminosity
     if (data.values.length > 0) {

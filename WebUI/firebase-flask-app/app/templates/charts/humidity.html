@@ -218,7 +218,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeChart() {
-    const ctx = document.getElementById('humidityChart').getContext('2d');
+    console.log('Initializing humidity chart...');
+    const canvas = document.getElementById('humidityChart');
+    if (!canvas) {
+        console.error('Humidity chart canvas not found!');
+        return;
+    }
+    
+    const ctx = canvas.getContext('2d');
+    console.log('Creating Chart.js instance...');
     
     humidityChart = new Chart(ctx, {
         type: 'line',
@@ -273,12 +281,16 @@ function initializeChart() {
 }
 
 function loadHumidityData() {
+    console.log('Loading humidity data...');
     fetch('/api/sensors/humidity')
         .then(response => response.json())
         .then(data => {
+            console.log('Humidity data received:', data);
             if (data.success) {
                 updateChartData(data.data);
                 updateStatistics(data.statistics);
+            } else {
+                console.error('Humidity data error:', data.error);
             }
         })
         .catch(error => {
@@ -287,12 +299,19 @@ function loadHumidityData() {
 }
 
 function updateChartData(data) {
+    console.log('Updating chart data:', data);
     currentData = data;
+    
+    if (!humidityChart) {
+        console.error('Humidity chart not initialized!');
+        return;
+    }
     
     // Update chart
     humidityChart.data.labels = data.labels;
     humidityChart.data.datasets[0].data = data.values;
     humidityChart.update();
+    console.log('Chart updated with', data.labels.length, 'data points');
     
     // Update current humidity
     if (data.values.length > 0) {
