@@ -195,8 +195,10 @@ void loop() {
     int moisture_val_ADC = analogRead(SENSOR_SOIL_HUMID_PIN);
     int moisture = map(moisture_val_ADC, 0, 4096, 100, 0);
     
-    float temperature = dht11.readTemperature();
-    float humidity = dht11.readHumidity();
+    float temperature = 0;
+    float humidity = 0;
+    temperature = dht11.readTemperature();
+    humidity = dht11.readHumidity();
     
     // Simulate sensor readings (replace with actual sensor values)
     //float humidity = 45.0 + random(0, 30);        // 45-75%
