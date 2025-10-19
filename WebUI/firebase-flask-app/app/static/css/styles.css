@@ -108,7 +108,7 @@ footer {
 
 .temperature-card {
     background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-    color: white;
+    color: #333;
 }
 
 .temperature-card .sensor-value {
@@ -118,7 +118,7 @@ footer {
 
 .humidity-card {
     background: linear-gradient(135deg, #4ecdc4, #6dd5ed);
-    color: white;
+    color: #333;
 }
 
 .humidity-card .sensor-value {

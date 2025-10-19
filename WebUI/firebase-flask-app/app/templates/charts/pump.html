@@ -155,12 +155,14 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 let pumpChart;
+let autoRefreshInterval;
 let currentPumpStatus = 'OFF';
 
 // Initialize chart when page loads
 document.addEventListener('DOMContentLoaded', function() {
     initializeChart();
     loadPumpData();
+    startAutoRefresh();
     
     // Setup auto mode toggle
     document.getElementById('autoMode').addEventListener('change', function() {
@@ -173,7 +175,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeChart() {
-    const ctx = document.getElementById('pumpChart').getContext('2d');
+    console.log('Initializing pump chart...');
+    const canvas = document.getElementById('pumpChart');
+    if (!canvas) {
+        console.error('Pump chart canvas not found!');
+        return;
+    }
+    
+    const ctx = canvas.getContext('2d');
+    console.log('Creating Chart.js instance...');
     
     pumpChart = new Chart(ctx, {
         type: 'bar',
@@ -227,13 +237,17 @@ function initializeChart() {
 }
 
 function loadPumpData() {
+    console.log('Loading pump data...');
     fetch('/api/sensors/pump')
         .then(response => response.json())
         .then(data => {
+            console.log('Pump data received:', data);
             if (data.success) {
                 updateChartData(data.data);
                 updateStatistics(data.statistics);
                 updatePumpStatus(data.status);
+            } else {
+                console.error('Pump data error:', data.error);
             }
         })
         .catch(error => {
@@ -242,11 +256,18 @@ function loadPumpData() {
 }
 
 function updateChartData(data) {
+    console.log('Updating chart data:', data);
+    
+    if (!pumpChart) {
+        console.error('Pump chart not initialized!');
+        return;
+    }
+    
     // Update chart
     pumpChart.data.labels = data.labels;
-    pumpChart.data.datasets[0].data = data.onTimes;
-    pumpChart.data.datasets[1].data = data.offTimes;
+    pumpChart.data.datasets[0].data = data.values;
     pumpChart.update();
+    console.log('Chart updated with', data.labels.length, 'data points');
 }
 
 function updateStatistics(stats) {
@@ -305,5 +326,31 @@ function togglePump(status) {
 function refreshData() {
     loadPumpData();
 }
+
+function startAutoRefresh() {
+    const interval = parseInt(document.getElementById('refreshInterval').value) * 1000;
+    autoRefreshInterval = setInterval(loadPumpData, interval);
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+    }
+}
+
+function refreshChart() {
+    loadPumpData();
+}
+
+function updateChart() {
+    const timeRange = document.getElementById('timeRange').value;
+    loadPumpData();
+}
+
+// Clean up on page unload
+window.addEventListener('beforeunload', function() {
+    stopAutoRefresh();
+});
 </script>
 {% endblock %}
