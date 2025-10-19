@@ -149,7 +149,8 @@ def get_sensors():
     try:
         # Get device parameter from request
         device_mac = request.args.get('device', '')
-        print(f"DEBUG: Sensors API called with device: {device_mac}")
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print(f"🕐 [{current_time}] Sensors API called with device: {device_mac}")
         db = get_db()
 
         # If Firebase is not available, return mock data
@@ -230,9 +231,21 @@ def get_sensors():
                 'timestamp': latest_reading.get('timestamp'),
                 'source': 'firebase_realtime_db'
             }
-            print(f"DEBUG: Latest reading found - Temp: {sensor_data['temperature']}, Humidity: {sensor_data['humidity']}")
+            
+            # Display detailed update information
+            print(f"🔄 DASHBOARD DATA UPDATED:")
+            print(f"   📱 Device: {device_mac}")
+            print(f"   📊 Temperature: {sensor_data['temperature']}°C")
+            print(f"   💧 Humidity: {sensor_data['humidity']}%")
+            print(f"   ☀️ Luminosity: {sensor_data['luminosity']} lux")
+            print(f"   🌱 Moisture: {sensor_data['moisture']}")
+            print(f"   💧 Pressure: {sensor_data['pressure']} hPa")
+            print(f"   ⏰ Timestamp: {sensor_data['timestamp']}")
+            print(f"   🔢 Raw Timestamp: {latest_timestamp}")
+            print(f"   📡 Source: {sensor_data['source']}")
+            print(f"   {'='*50}")
         else:
-            print("DEBUG: No latest reading found")
+            print(f"⚠️  No latest reading found for device: {device_mac}")
             sensor_data = {
                 'temperature': None,
                 'humidity': None,
