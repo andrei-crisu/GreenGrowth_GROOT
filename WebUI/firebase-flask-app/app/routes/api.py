@@ -113,6 +113,8 @@ def get_sensors():
                 'temperature': round(random.uniform(20.0, 26.0), 1),
                 'humidity': round(random.uniform(45.0, 75.0), 1),
                 'luminosity': random.randint(200, 1200),
+                'pressure': round(random.uniform(1000.0, 1030.0), 1),
+                'moisture': random.randint(20, 80),
                 'pump_status': 'ON' if random.choice([True, False]) else 'OFF',
                 'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 'source': 'mock_data'
@@ -128,8 +130,10 @@ def get_sensors():
 
         # Get all devices data to find the most recent reading
         all_devices = reader.get_all_devices_data()
+        print(f"DEBUG: Retrieved {len(all_devices) if all_devices else 0} devices from Firebase")
 
         if not all_devices:
+            print("DEBUG: No devices found in Firebase")
             return jsonify({
                 'success': True,
                 'data': {
@@ -171,7 +175,9 @@ def get_sensors():
                 'timestamp': latest_reading.get('timestamp'),
                 'source': 'firebase_realtime_db'
             }
+            print(f"DEBUG: Latest reading found - Temp: {sensor_data['temperature']}, Humidity: {sensor_data['humidity']}")
         else:
+            print("DEBUG: No latest reading found")
             sensor_data = {
                 'temperature': None,
                 'humidity': None,

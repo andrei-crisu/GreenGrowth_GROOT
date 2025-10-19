@@ -20,10 +20,16 @@ def init_firebase():
         service_account_path = os.getenv('FIREBASE_SERVICE_ACCOUNT_PATH')
         database_url = os.getenv('FIREBASE_DATABASE_URL', 'https://groot-f61e8-default-rtdb.europe-west1.firebasedatabase.app/')
         
+        # If not set via environment, try to use the local file
         if not service_account_path:
-            print("FIREBASE_SERVICE_ACCOUNT_PATH not set - running in test mode without Firebase")
-            rtdb = None
-            return
+            local_key_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'firebase-key.json')
+            if os.path.exists(local_key_path):
+                service_account_path = local_key_path
+                print(f"Using local Firebase key: {service_account_path}")
+            else:
+                print("FIREBASE_SERVICE_ACCOUNT_PATH not set and no local key found - running in test mode without Firebase")
+                rtdb = None
+                return
         
         # Initialize Firebase Admin SDK with Realtime Database URL
         if not firebase_admin._apps:

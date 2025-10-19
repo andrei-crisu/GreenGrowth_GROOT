@@ -151,8 +151,8 @@ def index():
                 
                 if latest_reading:
                     sensor_data = {
-                        'temperature': latest_reading.get('temperature', 0.0),
-                        'humidity': latest_reading.get('humidity', 0.0),
+                        'temperature': latest_reading.get('temperature'),
+                        'humidity': latest_reading.get('humidity'),
                         'luminosity': latest_reading.get('light_level', 0),
                         'pressure': latest_reading.get('pressure', 0.0),
                         'moisture': latest_reading.get('moisture', 0),
@@ -162,11 +162,12 @@ def index():
                         'last_updated': latest_reading.get('timestamp', 'Unknown'),
                         'source': 'firebase_realtime_db'
                     }
+                    print(f"DEBUG WEB: Latest reading - Temp: {sensor_data['temperature']}, Humidity: {sensor_data['humidity']}")
                 else:
                     # No data found, use default values
                     sensor_data = {
-                        'temperature': 0.0,
-                        'humidity': 0.0,
+                        'temperature': None,
+                        'humidity': None,
                         'luminosity': 0,
                         'pressure': 0.0,
                         'moisture': 0,
@@ -179,8 +180,8 @@ def index():
             except Exception as e:
                 # Firebase error, use default values
                 sensor_data = {
-                    'temperature': 0.0,
-                    'humidity': 0.0,
+                    'temperature': None,
+                    'humidity': None,
                     'luminosity': 0,
                     'pressure': 0.0,
                     'moisture': 0,
@@ -210,8 +211,8 @@ def index():
         flash(f'Error loading sensor data: {str(e)}', 'error')
         # Return default values on error
         default_data = {
-            'temperature': 0.0,
-            'humidity': 0.0,
+            'temperature': None,
+            'humidity': None,
             'luminosity': 0,
             'pressure': 0.0,
             'moisture': 0,

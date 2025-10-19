@@ -111,9 +111,19 @@ footer {
     color: white;
 }
 
+.temperature-card .sensor-value {
+    color: #333 !important;
+    font-weight: bold;
+}
+
 .humidity-card {
     background: linear-gradient(135deg, #4ecdc4, #6dd5ed);
     color: white;
+}
+
+.humidity-card .sensor-value {
+    color: #333 !important;
+    font-weight: bold;
 }
 
 .luminosity-card {
