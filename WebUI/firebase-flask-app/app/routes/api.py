@@ -147,6 +147,9 @@ def get_devices():
 def get_sensors():
     """Get current sensor readings from Firebase Realtime Database."""
     try:
+        # Get device parameter from request
+        device_mac = request.args.get('device', '')
+        print(f"DEBUG: Sensors API called with device: {device_mac}")
         db = get_db()
 
         # If Firebase is not available, return mock data
@@ -191,20 +194,30 @@ def get_sensors():
                 'message': 'No sensor data available'
             })
 
-        # Find the most recent reading across all devices
+        # Find the most recent reading from the selected device
         latest_reading = None
         latest_timestamp = 0
 
-        for mac_address, device_data in all_devices.items():
+        if device_mac and device_mac in all_devices:
+            # Get data from specific device
+            device_data = all_devices[device_mac]
             readings = device_data.get('readings', {})
-            for timestamp_key, reading in readings.items():
-                try:
-                    timestamp_val = int(timestamp_key)
-                    if timestamp_val > latest_timestamp:
-                        latest_timestamp = timestamp_val
-                        latest_reading = reading
-                except (ValueError, TypeError):
-                    continue
+            print(f"DEBUG: Getting data from selected device: {device_mac}")
+        else:
+            # If no device specified or device not found, use first available device
+            first_device = list(all_devices.keys())[0]
+            print(f"DEBUG: No device specified or device not found, using first device: {first_device}")
+            device_data = all_devices[first_device]
+            readings = device_data.get('readings', {})
+        
+        for timestamp_key, reading in readings.items():
+            try:
+                timestamp_val = int(timestamp_key)
+                if timestamp_val > latest_timestamp:
+                    latest_timestamp = timestamp_val
+                    latest_reading = reading
+            except (ValueError, TypeError):
+                continue
 
         if latest_reading:
             sensor_data = {

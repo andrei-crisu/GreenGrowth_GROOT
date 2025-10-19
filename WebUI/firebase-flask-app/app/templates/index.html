@@ -350,7 +350,10 @@ function stopAutoRefresh() {
 
 // Refresh sensor data
 function refreshSensors() {
-    fetch('/api/sensors')
+    const selectedDevice = document.getElementById('device-selector').value;
+    const url = selectedDevice ? `/api/sensors?device=${selectedDevice}` : '/api/sensors';
+    
+    fetch(url)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
